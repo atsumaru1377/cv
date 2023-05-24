@@ -117,41 +117,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named opencv_test
+# Target rules for targets named noise
 
 # Build rule for target.
-opencv_test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 opencv_test
-.PHONY : opencv_test
+noise: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 noise
+.PHONY : noise
 
 # fast build rule for target.
-opencv_test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/opencv_test.dir/build.make CMakeFiles/opencv_test.dir/build
-.PHONY : opencv_test/fast
+noise/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/noise.dir/build.make CMakeFiles/noise.dir/build
+.PHONY : noise/fast
 
-opencv_test.o: opencv_test.cpp.o
-.PHONY : opencv_test.o
+noise.o: noise.cpp.o
+.PHONY : noise.o
 
 # target to build an object file
-opencv_test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/opencv_test.dir/build.make CMakeFiles/opencv_test.dir/opencv_test.cpp.o
-.PHONY : opencv_test.cpp.o
+noise.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/noise.dir/build.make CMakeFiles/noise.dir/noise.cpp.o
+.PHONY : noise.cpp.o
 
-opencv_test.i: opencv_test.cpp.i
-.PHONY : opencv_test.i
+noise.i: noise.cpp.i
+.PHONY : noise.i
 
 # target to preprocess a source file
-opencv_test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/opencv_test.dir/build.make CMakeFiles/opencv_test.dir/opencv_test.cpp.i
-.PHONY : opencv_test.cpp.i
+noise.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/noise.dir/build.make CMakeFiles/noise.dir/noise.cpp.i
+.PHONY : noise.cpp.i
 
-opencv_test.s: opencv_test.cpp.s
-.PHONY : opencv_test.s
+noise.s: noise.cpp.s
+.PHONY : noise.s
 
 # target to generate assembly for a file
-opencv_test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/opencv_test.dir/build.make CMakeFiles/opencv_test.dir/opencv_test.cpp.s
-.PHONY : opencv_test.cpp.s
+noise.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/noise.dir/build.make CMakeFiles/noise.dir/noise.cpp.s
+.PHONY : noise.cpp.s
 
 # Help Target
 help:
@@ -161,10 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... opencv_test"
-	@echo "... opencv_test.o"
-	@echo "... opencv_test.i"
-	@echo "... opencv_test.s"
+	@echo "... noise"
+	@echo "... noise.o"
+	@echo "... noise.i"
+	@echo "... noise.s"
 .PHONY : help
 
 

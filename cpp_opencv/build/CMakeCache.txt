@@ -145,7 +145,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=opencv_test
+CMAKE_PROJECT_NAME:STATIC=noise
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -213,7 +213,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 OpenCV_DIR:PATH=/usr/local/lib/cmake/opencv4
 
 //Target object name
-SOURCE_CODE:STRING=opencv_test
+SOURCE_CODE:STRING=noise
 
 //No help, variable specified on the command line.
 SOURCE_FILE:UNINITIALIZED=noise

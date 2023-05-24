@@ -147,8 +147,8 @@ void nonLocalMeansFilter(const std::vector<std::vector<double>>& src, std::vecto
                     std::vector<std::vector<double>> patchDiff;
                     subMat(patch1, patch2, patchDiff);
                     double norm = l2norm(patchDiff);
-                    w[yj-filterYstart][xj-filterXstart] =  exp(-std::max(norm/(patchSize*patchSize)-2*sigma*sigma, 0.0));
-                    sumW += exp(-std::max(norm*norm/(patchSize*patchSize)-2*sigma*sigma, 0.0));
+                    w[yj-filterYstart][xj-filterXstart] =  exp(-std::max(norm/(patchSize*patchSize*3)-2*sigma*sigma, 0.0));
+                    sumW += exp(-std::max(norm/(patchSize*patchSize*3)-2*sigma*sigma, 0.0));
                 }
             }
 
@@ -204,8 +204,8 @@ int main() {
     cv::imwrite("output_bilateral.jpg", dst_bilateral);
 
     cv::Mat dst_nonlocalmeans;
-    double h = 0.5;
-    double sigma = 0.5;
+    double h = 1;
+    double sigma = 10;
     int patchSize = 5;
     int filterHeight = 100;
     int filterWidth = 100;
