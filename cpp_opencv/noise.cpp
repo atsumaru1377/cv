@@ -143,6 +143,72 @@ void nonLocalMeansFilter(const cv::Mat& src, cv::Mat& dst, double h, double sigm
     dstDouble.convertTo(dst, CV_8UC3);
 }
 
+void guidedFilterDouble(const cv::Mat& src, const cv::Mat& guide, cv::Mat& dst, int patchSize, double eps) {
+    int height = src.rows;
+    int width = src.cols;
+    int halfPatchSize = patchSize / 2;
+
+    src.copyTo(dst);
+
+    cv::Mat a = cv::Mat::zeros(height, width, src.type());
+    cv::Mat b = cv::Mat::zeros(height, width, src.type());
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            printProgressBar(y*width+x, width*height);
+            cv::Vec3d meanDot = cv::Vec3d(0,0,0);
+            cv::Vec3d meanSrc = cv::Vec3d(0,0,0);
+            cv::Vec3d meanGuide = cv::Vec3d(0,0,0);
+            cv::Vec3d sumSquaredGuide = cv::Vec3d(0,0,0);
+            for (int j = -halfPatchSize; j <= halfPatchSize; ++j) {
+                for (int i = -halfPatchSize; i <= halfPatchSize; ++i) {
+                    if (y + j >= 0 && y + j < height && x + i >= 0 && x + i < width) {
+                        meanDot += src.at<cv::Vec3d>(y+j, x+i).mul(guide.at<cv::Vec3d>(y+j, x+i));
+                        meanSrc += src.at<cv::Vec3d>(y+j, x+i);
+                        meanGuide += guide.at<cv::Vec3d>(y+j, x+i);
+                        sumSquaredGuide += guide.at<cv::Vec3d>(y+j, x+i).mul(guide.at<cv::Vec3d>(y+j, x+i));
+                    }
+                }
+            }
+            meanDot /= (patchSize*patchSize);
+            meanSrc /= (patchSize*patchSize);
+            meanGuide /= (patchSize*patchSize);
+            cv::Vec3d varGuide = sumSquaredGuide / (patchSize*patchSize) - meanGuide.mul(meanGuide);
+            a.at<cv::Vec3d>(y, x)[0] = (meanDot[0] - meanSrc[0]*meanGuide[0])/(varGuide[0] + eps);
+            a.at<cv::Vec3d>(y, x)[1] = (meanDot[1] - meanSrc[1]*meanGuide[1])/(varGuide[1] + eps);
+            a.at<cv::Vec3d>(y, x)[2] = (meanDot[2] - meanSrc[2]*meanGuide[2])/(varGuide[2] + eps);
+            b.at<cv::Vec3d>(y, x) = meanSrc - meanGuide.mul(a.at<cv::Vec3d>(y,x));
+        }
+    }
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            cv::Vec3d meanA = cv::Vec3d(0,0,0);
+            cv::Vec3d meanB = cv::Vec3d(0,0,0);
+            for (int j = -halfPatchSize; j <= halfPatchSize; ++j) {
+                for (int i = -halfPatchSize; i <= halfPatchSize; ++i) {
+                    if (y + j >= 0 && y + j < height && x + i >= 0 && x + i < width) {
+                        meanA += a.at<cv::Vec3d>(y+j, x+i);
+                        meanB += b.at<cv::Vec3d>(y+j, x+i);
+                    }
+                }
+            }
+            meanA /= (patchSize*patchSize);
+            meanB /= (patchSize*patchSize);
+            dst.at<cv::Vec3d>(y, x) = guide.at<cv::Vec3d>(y, x).mul(meanA) + meanB;
+        }
+    }
+}
+
+void guidedFilter(const cv::Mat& src, const cv::Mat& guide, cv::Mat& dst, int patchSize, double eps) {
+    cv::Mat srcDouble;
+    cv::Mat dstDouble;
+    cv::Mat guideDouble;
+
+    src.convertTo(srcDouble, CV_64FC3);
+    guide.convertTo(guideDouble, CV_64FC3);
+    guidedFilterDouble(srcDouble, guideDouble, dstDouble, patchSize, eps);
+
+    dstDouble.convertTo(dst, CV_8UC3);
+}
 
 int main() {
     cv::Mat src = cv::imread("input2.jpg");
@@ -156,7 +222,7 @@ int main() {
     double sigmaColor = 30.0;
     double sigmaSpace = 10.0;
     bilateralFilterBGR(src, dst_bilateral, d, sigmaColor, sigmaSpace);
-    cv::imwrite("output_bilateral.jpg", dst_bilateral);
+    //cv::imwrite("output_bilateral.jpg", dst_bilateral);
 
     cv::Mat dst_nonlocalmeans;
     double h = 15;
@@ -164,8 +230,19 @@ int main() {
     int patchSize = 15;
     int filterHeight = 100;
     int filterWidth = 100;
-    nonLocalMeansFilter(src, dst_nonlocalmeans, h, sigma, patchSize, filterHeight, filterWidth);
-    cv::imwrite("output_nonlocalmeans.jpg", dst_nonlocalmeans);
+    //nonLocalMeansFilter(src, dst_nonlocalmeans, h, sigma, patchSize, filterHeight, filterWidth);
+    //cv::imwrite("output_nonlocalmeans.jpg", dst_nonlocalmeans);
+
+    cv::Mat dst_guided;
+    cv::Mat guide = cv::imread("input4_guide.jpg");
+    if (guide.empty()) {
+        std::cerr << "Failed to open image file." << std::endl;
+        return -1;
+    }
+    double eps = 1000;
+    //guidedFilter(src, guide, dst_guided, patchSize, eps);
+    guidedFilter(src, dst_bilateral, dst_guided, patchSize, eps);
+    cv::imwrite("output_guided.jpg", dst_guided);
 
     return 0;
 }
